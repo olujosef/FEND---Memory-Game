@@ -5,7 +5,7 @@ const stars = document.querySelectorAll('ul.stars li');
 let deck = document.querySelector('ul.deck');
 let cards = document.querySelectorAll(".card");
 let cardArray = Array.from(cards);
-let moves = 0;
+let moves;
 const moveElement = document.querySelector('.moves');
 let clickedCard;
 let numberOfMatch; //It stores the number of matched cards
@@ -18,10 +18,11 @@ window.onload = function(){
     initGame();
 }
 
-//method that starts the game
+//This starts the game
 function initGame(){
     numberOfMatch = 0;
     clickedCard = [];
+    moves = 0;
     resetGame();
 
     createTimerElement();
@@ -33,15 +34,13 @@ function initGame(){
         deck.children[i].addEventListener('click', displayCard);
         deck.children[i].addEventListener('click', function(){
          //Add a clicked card to clickedcard
-            if(!clickedCard.includes(this)){
+            if(clickedCard.length <= 2 && !clickedCard.includes(this) &&  !this.classList.contains('match')){
                 clickedCard.push(this);
             
             
-                if(clickedCard.length%2 === 0){
+                if(clickedCard.length === 2){
                     countMove();
                     starRating();
-                }
-                if(clickedCard.length === 2){
                     openedCard();
                 }
             }
@@ -51,10 +50,11 @@ function initGame(){
 
    
 }
+
 // To show card content.
-var displayCard = function(){
-    this.classList.toggle('show');
-    this.classList.toggle('open');
+let displayCard = function(){
+    this.classList.toggle('show', true);
+    this.classList.toggle('open', true);
 };
 
 
@@ -104,13 +104,14 @@ function fillDeck(){
 
 //Count the move make with the paired clicks
 function countMove(){
+    moves;
     moves++;
     if(moves === 1){
         setTimer();
     }
     moveElement.innerHTML = moves;
 }
-//To determine the matched cards
+//Determines the matched cards
 function openedCard(){
     if(clickedCard[0].firstElementChild.className ===
         clickedCard[1].firstElementChild.className){
@@ -124,10 +125,8 @@ function openedCard(){
     }
  }
 
-
-//For the matching cards
+//Matches two corresponding cards
  function matched(){
-
     for(let i =0; i < 2; i++){
         clickedCard[i].classList.add('match');
         clickedCard[i].classList.remove('show', 'open');
@@ -136,7 +135,7 @@ function openedCard(){
     
     
  }
-//For the clicked pair that do not match
+//Cards that are not matched after being clicked
  function unmatched(){
    setTimeout(function(){
     for(let i =0; i < 2; i++){
@@ -145,7 +144,8 @@ function openedCard(){
     clickedCard = [];
    }, 500);
  }
-//Reset the game
+
+ //Resets the game to initial values.
  function resetGame(){
      resetTime();
      resetMove();
@@ -154,12 +154,13 @@ function openedCard(){
 
  }
 
-
+// Restarts time from Zero
  function resetTime(){
     clearInterval(clock);
 
  }
 
+//Resets the stars to default
  function resetStar(){
      for(let i =0; i<stars.length;i++){
         stars[i].style.display='inline';
@@ -167,6 +168,7 @@ function openedCard(){
     
  }  
 
+ //Makes number of moves zero
  function resetMove(){
     moves = 0;
     moveElement.innerHTML = moves;
@@ -191,11 +193,14 @@ function shuffle(array) {
     return array;
 }
 
-// add event listener to repeat icon.
+//Restarts the game from the beginning all over 
 let restart = document.querySelector('.fa-repeat');
 restart.addEventListener('click', initGame);
 
-//call gameover function
+/*
+ *Shows when all the cards are matched
+ *calls the modal message
+ */
 function gameOver(){
     clearInterval(clock);
     openModal();
@@ -235,7 +240,7 @@ function closeModal(){
     modal.style.display= 'none';
 }
 
-// Add event listener to clicks of the buttons.
+// close, reset and closebtn 
 
 close.addEventListener('click', closeModal);
 closebtn.addEventListener('click', closeModal);
